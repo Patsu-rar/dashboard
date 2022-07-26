@@ -1,0 +1,7 @@
+<nav class="navigation" *ngIf="loginService.isLogged">
+  <a class="nav-item" [routerLink]="'/'">Assessments</a>
+  <a class="nav-item" [routerLink]="'/userassessment/graph'">Graph</a>
+  <a class="nav-item" [routerLink]="'/users'" *ngIf="loginService.isAdmin">Users</a>
+  <a class="nav-item" *ngIf="loginService.isLogged" (click)="logout()">Logout</a>
+</nav>
+
