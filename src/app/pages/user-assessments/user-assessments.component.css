@@ -1,0 +1,12 @@
+.container {
+  flex-direction: row;
+}
+
+.card {
+  width: 25%;
+  margin-right: 5%;
+}
+
+.assessment-image {
+  width: 100%;
+}
