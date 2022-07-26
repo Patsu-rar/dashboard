@@ -17,6 +17,8 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {JwtInterceptor} from "./shared/interceptors/jwt.interceptor";
 import {fakeBackendProvider} from "./shared/interceptors/fake-backend";
 import {NgChartsModule} from "ng2-charts";
+import {MatTableModule} from "@angular/material/table";
+import {MatSortModule} from "@angular/material/sort";
 
 @NgModule({
   declarations: [
@@ -37,7 +39,9 @@ import {NgChartsModule} from "ng2-charts";
     ReactiveFormsModule,
     HttpClientModule,
     NgChartsModule,
-    FormsModule
+    FormsModule,
+    MatTableModule,
+    MatSortModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

@@ -55,8 +55,4 @@ export class LoginService {
 
     this.router.navigate(['/login']);
   }
-
-  getAll() {
-    return this.http.get<User[]>(`${environment.apiUrl}/users`);
-  }
 }

@@ -37,7 +37,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
     }
 
     function getUsers() {
-      return ok(users.map((x: any) => userDetails(x)));
+      return ok(users.map((x: any) => adminDetails(x)));
     }
 
     function getAssessmentsInfo() {
@@ -58,6 +58,11 @@ export class FakeBackendInterceptor implements HttpInterceptor {
     function userDetails(user: any) {
       const { first_name, last_name, role, token } = user;
       return { first_name, last_name, role, token };
+    }
+
+    function adminDetails(user: any) {
+      const { id, first_name, last_name, email, role } = user;
+      return { id, first_name, last_name, email, role };
     }
   }
 }
