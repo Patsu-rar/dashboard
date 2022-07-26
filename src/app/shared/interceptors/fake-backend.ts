@@ -9,15 +9,18 @@ let users = JSON.parse(localStorage.getItem('user')!);
 export class FakeBackendInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const { url, method, body } = request;
-
     return handleRoute();
 
     function handleRoute() {
       switch (true) {
         case url.endsWith('/login') && method === 'POST':
           return authenticate();
-        case url.endsWith('/users') && method === 'GET':
+        case url.endsWith('/users'):
           return getUsers();
+        case url.endsWith('') && method === 'GET':
+          return getAssessmentsInfo();
+        case url.endsWith('/userassessment/graph') && method === 'GET':
+          return getAssessmentsInfo();
         default:
           return next.handle(request);
       }
@@ -25,16 +28,21 @@ export class FakeBackendInterceptor implements HttpInterceptor {
 
     function authenticate() {
       const { email, password } = body;
-      const user = users.find((x: any) => x.email === email && x.password === password);
+      const user = users.find((x: any) =>  x.email === email && x.password === password);
       if (!user) return error('Username or password is incorrect');
       return ok({
-        ...basicDetails(user),
+        ...userDetails(user),
         token: 'QWRtaW5Vc2Vy'
       })
     }
 
     function getUsers() {
-      return ok(users.map((x: any) => basicDetails(x)));
+      return ok(users.map((x: any) => userDetails(x)));
+    }
+
+    function getAssessmentsInfo() {
+      let activeUser = JSON.parse(sessionStorage.getItem('user')!)
+      return ok(users.find((user: any) => user.first_name === activeUser.first_name).assessment_reports);
     }
 
     function ok(body?: any) {
@@ -47,7 +55,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
         .pipe(materialize(), delay(500), dematerialize());
     }
 
-    function basicDetails(user: any) {
+    function userDetails(user: any) {
       const { first_name, last_name, role, token } = user;
       return { first_name, last_name, role, token };
     }

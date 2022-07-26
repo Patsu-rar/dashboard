@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {AssessmentService} from "../../shared/services/assessment.service";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-user-assessments',
@@ -6,10 +8,14 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./user-assessments.component.css']
 })
 export class UserAssessmentsComponent implements OnInit {
+  sub?: Subscription;
 
-  constructor() { }
+  constructor(public assessmentService: AssessmentService) {
 
-  ngOnInit(): void {
   }
 
+  ngOnInit(): void {
+    this.sub = this.assessmentService.getAssessments().pipe().subscribe();
+
+  }
 }

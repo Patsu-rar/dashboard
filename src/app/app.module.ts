@@ -12,10 +12,11 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {AppRoutingModule} from "./app-routing.module";
 import {MatButtonModule} from "@angular/material/button";
-import {ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {JwtInterceptor} from "./shared/interceptors/jwt.interceptor";
 import {fakeBackendProvider} from "./shared/interceptors/fake-backend";
+import {NgChartsModule} from "ng2-charts";
 
 @NgModule({
   declarations: [
@@ -34,7 +35,9 @@ import {fakeBackendProvider} from "./shared/interceptors/fake-backend";
     MatInputModule,
     MatButtonModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    NgChartsModule,
+    FormsModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

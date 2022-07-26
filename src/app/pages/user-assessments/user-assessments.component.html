@@ -1,1 +1,8 @@
-<p>user-assessments works!</p>
+<div class="container">
+  <div class="card" *ngFor="let assessment of assessmentService.assessments">
+    <img src={{assessment.image_url}} alt="assessment-image" class="assessment-image">
+    <h3>{{assessment.name}}</h3>
+    <h4>users resolved: {{assessment.users_resolved}}</h4>
+    <h4>active: {{assessment.active}}</h4>
+  </div>
+</div>

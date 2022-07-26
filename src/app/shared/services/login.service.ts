@@ -12,12 +12,14 @@ export class LoginService {
   private userSubject: BehaviorSubject<User>;
   public user: Observable<User>;
 
-  isLogged = false;
-  isAdmin = false;
+  isLogged?: boolean;
+  isAdmin?: boolean;
 
   constructor(private http: HttpClient, private router: Router) {
     this.userSubject = new BehaviorSubject<User>(JSON.parse(sessionStorage.getItem('user')!));
     this.user = this.userSubject.asObservable();
+    this.isLogged = JSON.parse(sessionStorage.getItem('isLogged')!);
+    this.isAdmin = JSON.parse(sessionStorage.getItem('isAdmin')!);
   }
 
   public get userValue(): User {
@@ -27,12 +29,15 @@ export class LoginService {
   login(email: string, password: string) {
     return this.http.post<User>(`${environment.apiUrl}/login`, {email, password})
       .pipe(map(user => {
+
         sessionStorage.setItem('user', JSON.stringify(user));
-        this.isLogged = true;
+        sessionStorage.setItem('isLogged', 'true');
+        this.isLogged = JSON.parse(sessionStorage.getItem('isLogged')!);
         if (JSON.parse(sessionStorage.getItem('user')!).role === 'Admin') {
-          this.isAdmin = true;
+          sessionStorage.setItem('isAdmin', 'true');
+          this.isAdmin = JSON.parse(sessionStorage.getItem('isAdmin')!);
         }
-        console.log(this.isAdmin, this.isLogged);
+
         this.userSubject?.next(user);
         return user;
       }));
@@ -40,10 +45,14 @@ export class LoginService {
 
   logout() {
     sessionStorage.removeItem('user');
+    sessionStorage.removeItem('reports');
     this.userSubject.next(null as any);
-    this.isLogged = false;
-    this.isAdmin = false;
-    console.log(this.isLogged, this.isAdmin);
+    sessionStorage.setItem('isLogged', 'false');
+    this.isLogged = JSON.parse(sessionStorage.getItem('isLogged')!);
+
+    sessionStorage.setItem('isAdmin', 'false');
+    this.isAdmin = JSON.parse(sessionStorage.getItem('isAdmin')!);
+
     this.router.navigate(['/login']);
   }
 

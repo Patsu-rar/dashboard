@@ -7,7 +7,8 @@ import {LoginService} from "../../shared/services/login.service";
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent{
-  currentUser = JSON.parse(sessionStorage.getItem('user')!);
+  isLogged = JSON.parse(sessionStorage.getItem('isLogged')!);
+  isAdmin = JSON.parse(sessionStorage.getItem('isAdmin')!);
 
   constructor(public loginService: LoginService) {
   }
