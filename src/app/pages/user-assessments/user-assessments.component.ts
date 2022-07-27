@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AssessmentService} from "../../shared/services/assessment.service";
 import {Subscription} from "rxjs";
 
@@ -7,15 +7,17 @@ import {Subscription} from "rxjs";
   templateUrl: './user-assessments.component.html',
   styleUrls: ['./user-assessments.component.css']
 })
-export class UserAssessmentsComponent implements OnInit {
-  sub?: Subscription;
+export class UserAssessmentsComponent implements OnInit, OnDestroy{
+  sub?: Subscription[];
 
   constructor(public assessmentService: AssessmentService) {
-
-  }
+ }
 
   ngOnInit(): void {
-    this.sub = this.assessmentService.getAssessments().pipe().subscribe();
+    this.sub?.push(this.assessmentService.getAssessments().subscribe());
+  }
 
+  ngOnDestroy(): void {
+    this.sub?.forEach(s => s.unsubscribe());
   }
 }

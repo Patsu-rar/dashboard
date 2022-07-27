@@ -9,36 +9,32 @@ import {Router} from "@angular/router";
   providedIn: 'root'
 })
 export class LoginService {
-  private userSubject: BehaviorSubject<User>;
-  public user: Observable<User>;
+  private userSubject$: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
 
   isLogged?: boolean;
   isAdmin?: boolean;
 
   constructor(private http: HttpClient, private router: Router) {
-    this.userSubject = new BehaviorSubject<User>(JSON.parse(sessionStorage.getItem('user')!));
-    this.user = this.userSubject.asObservable();
-    this.isLogged = JSON.parse(sessionStorage.getItem('isLogged')!);
-    this.isAdmin = JSON.parse(sessionStorage.getItem('isAdmin')!);
   }
 
-  public get userValue(): User {
-    return this.userSubject.value;
+  public get userValue(): User | null {
+    return this.userSubject$.value;
   }
 
   login(email: string, password: string) {
     return this.http.post<User>(`${environment.apiUrl}/login`, {email, password})
       .pipe(map(user => {
-
         sessionStorage.setItem('user', JSON.stringify(user));
+
         sessionStorage.setItem('isLogged', 'true');
         this.isLogged = JSON.parse(sessionStorage.getItem('isLogged')!);
+
         if (JSON.parse(sessionStorage.getItem('user')!).role === 'Admin') {
           sessionStorage.setItem('isAdmin', 'true');
           this.isAdmin = JSON.parse(sessionStorage.getItem('isAdmin')!);
         }
 
-        this.userSubject?.next(user);
+        this.userSubject$?.next(user);
         return user;
       }));
   }
@@ -46,7 +42,9 @@ export class LoginService {
   logout() {
     sessionStorage.removeItem('user');
     sessionStorage.removeItem('reports');
-    this.userSubject.next(null as any);
+
+    this.userSubject$.next(null);
+
     sessionStorage.setItem('isLogged', 'false');
     this.isLogged = JSON.parse(sessionStorage.getItem('isLogged')!);
 
@@ -54,9 +52,5 @@ export class LoginService {
     this.isAdmin = JSON.parse(sessionStorage.getItem('isAdmin')!);
 
     this.router.navigate(['/login']);
-  }
-
-  getAll() {
-    return this.http.get<User[]>(`${environment.apiUrl}/users`);
   }
 }
