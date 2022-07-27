@@ -1,7 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {LoginService} from "../../shared/services/login.service";
 import {ActivatedRoute, Router} from '@angular/router';
+import {catchError, Subscription} from "rxjs";
 
 const users = [
   {
@@ -74,14 +75,18 @@ const users = [
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   loginForm: FormGroup = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required])
   });
 
-  constructor(private loginService: LoginService, private route: ActivatedRoute,
-              private router: Router) {
+  sub?: Subscription[];
+
+  constructor(
+    private loginService: LoginService,
+    private route: ActivatedRoute,
+    private router: Router) {
   }
 
   ngOnInit(): void {
@@ -93,16 +98,14 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    this.loginService.login(this.loginForm.get('email')?.value, this.loginForm.get('password')?.value)
-      .pipe()
-      .subscribe({
-        next: () => {
-          const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-          this.router.navigateByUrl(returnUrl);
-        },
-        error: error => {
-          console.log(error);
-        }
-      });
+    const subscriber = this.loginService.login(this.loginForm.get('email')?.value, this.loginForm.get('password')?.value)
+      .pipe(catchError(err => err))
+      .subscribe(() => this.router.navigate(['/']));
+
+    this.sub?.push(subscriber);
+  }
+
+  ngOnDestroy(): void {
+    this.sub?.forEach(s => s.unsubscribe());
   }
 }

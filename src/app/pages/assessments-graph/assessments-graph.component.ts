@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ChartType, ChartDataset} from "chart.js";
 import {BaseChartDirective} from "ng2-charts";
 import {AssessmentService} from "../../shared/services/assessment.service";
@@ -9,8 +9,8 @@ import {Subscription} from "rxjs";
   templateUrl: './assessments-graph.component.html',
   styleUrls: ['./assessments-graph.component.css']
 })
-export class AssessmentsGraphComponent implements OnInit {
-  sub?: Subscription;
+export class AssessmentsGraphComponent implements OnInit, OnDestroy {
+  sub?: Subscription[];
 
   set?: ChartDataset;
   activeAssessments: any;
@@ -22,7 +22,7 @@ export class AssessmentsGraphComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.sub = this.assessmentService.getAssessments().pipe().subscribe();
+    this.sub?.push(this.assessmentService.getAssessments().subscribe());
     this.activeAssessments = JSON.parse(sessionStorage.getItem('reports')!);
     this.selected = this.activeAssessments[0].name;
     Object.entries(this.activeAssessments[0].data).map((el: any) => {
@@ -45,10 +45,6 @@ export class AssessmentsGraphComponent implements OnInit {
     this.lineChartData.pop();
     this.lineChartLabels = this.graphKeys;
     this.lineChartData.push(this.set);
-
-    console.log(this.lineChartData,);
-
-    // console.log(this.lineChartData.includes(this.set));
   }
 
   lineChartData: ChartDataset[] = [
@@ -62,4 +58,8 @@ export class AssessmentsGraphComponent implements OnInit {
   lineChartLegend = true;
   lineChartPlugins = [];
   lineChartType: ChartType = 'line';
+
+  ngOnDestroy(): void {
+    this.sub?.forEach(s => s.unsubscribe());
+  }
 }
